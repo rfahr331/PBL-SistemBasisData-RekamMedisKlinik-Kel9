@@ -1,0 +1,25 @@
+# Folder Konfigurasi IDE / Code Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# File Sistem Operasi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# File Database Lokal (Jika ada tes lokal, yang diupload hanya .sql)
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+
+# File Log dan Temporary
+*.log
+tmp/
+temp/
+
+# File Environment (jika nanti ada konfigurasi password lokal, jangan diupload)
+.env
+.env.local
