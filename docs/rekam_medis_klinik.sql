@@ -180,7 +180,7 @@ INSERT INTO `pasien` (`No_RM`, `Nama_Pasien`, `Tgl_Lahir`, `JK`, `Alamat`, `No_T
 ('RM001', 'Lukman Hakim', '2005-12-04', 'L', 'Jl. Sutami, Tanjung Pinang', '0811001'),
 ('RM002', 'Rezza Firnando', '2005-04-02', 'L', 'Jl. Engku Putri, Tanjung Pinang', '0811002'),
 ('RM003', 'Muhammad Fachry Reza', '2005-04-08', 'L', 'Jl. Pramuka, Tanjung Pinang', '0811003'),
-('RM004', 'Maisa Bimo Ayu', '2006-04-07', 'L', 'Jl. Wiratno, Tanjung Pinang', '0811004');
+('RM004', 'Mahesa Bimo Abiyyu', '2006-04-07', 'L', 'Jl. Wiratno, Tanjung Pinang', '0811004');
 
 --
 -- Indexes for dumped tables
