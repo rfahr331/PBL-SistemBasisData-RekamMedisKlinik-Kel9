@@ -1,12 +1,5 @@
 # PROGRES 3: IMPLEMENTASI DAN PENGUJIAN BASIS DATA
 
-*Mata Kuliah:* Sistem Basis Data  
-*Studi Kasus:* Sistem Rekam Medis Klinik  
-*Kelompok:* 9  
-
----
-# PROGRES 3: IMPLEMENTASI DAN PENGUJIAN BASIS DATA
-
 **Mata Kuliah:** Sistem Basis Data  
 **Studi Kasus:** Sistem Rekam Medis Klinik  
 **Kelompok:** 9  
