@@ -41,8 +41,9 @@ ALTER TABLE `detail_resep`
 ALTER TABLE `kunjungan`
   ADD CONSTRAINT `kunjungan_ibfk_1` FOREIGN KEY (`No_RM`) REFERENCES `pasien` (`No_RM`) ON DELETE CASCADE,
   ADD CONSTRAINT `kunjungan_ibfk_2` FOREIGN KEY (`Kode_Dokter`) REFERENCES `dokter` (`Kode_Dokter`) ON DELETE SET NULL;
+```
   ---
-  
+
 2. DATA UJI (DUMPING DATA)
 Basis data telah diisi dengan data sampel riasi operasional klinik per tanggal 25 Juni 2026 untuk keperluan verifikasi query:
 
@@ -55,7 +56,7 @@ Basis data telah diisi dengan data sampel riasi operasional klinik per tanggal 2
 
 **3. IMPLEMENTASI 10 QUERY SQL EKSEKUSI**
 Berikut adalah 10 rancangan query fungsional untuk kebutuhan analisis data operasional dan manajerial klinik:
-
+```sql
 Q1: Menampilkan Riwayat Medis Pasien Beserta Dokter yang Menangani
 Menampilkan riwayat kunjungan pasien lengkap dengan nama dokter dan keluhannya.
 
@@ -135,14 +136,14 @@ Skrining klinis mendeteksi pasien suspect infeksi akut/hipertermia.
 SELECT No_Kunjungan, No_RM, Keluhan, Suhu 
 FROM kunjungan 
 WHERE Suhu > 37.50;
-
+```
 ---
 
- **4. SKENARIO PENGUJIAN SISTEM (TESTING MATRIX)**
+## 4. SKENARIO PENGUJIAN SISTEM (TESTING MATRIX)
 
 | No | Komponen Uji | Tindakan / Input Simulasi | Reaksi Sistem Ekspektasi | Status |
 | :---: | :--- | :--- | :--- | :---: |
-| 1 | Primary Key Constraint | Menginput data pasien baru dengan No_RM yang sudah ada (RM001). | Ditolak oleh MySQL (Error: Duplicate Entry). | Sukses |
-| 2 | Foreign Key Restrict / Cascade | Menghapus record pada tabel kunjungan dengan No_Kunjungan = K20260602. | Data relasi pada tabel detail_resep & detail_diagnosa ikut terhapus secara otomatis (Cascade). | Sukses |
-| 3 | Nullability Constraint | Memasukkan data diagnosa baru dengan mengosongkan field Nama_Diagnosa. | Sistem menolak proses insert (Error: Column cannot be null). | Sukses |
-| 4 | Set Null Constraint | Menghapus data master dokter dengan Kode_Dokter = DR001. | Field Kode_Dokter pada data kunjungan berubah menjadi NULL tanpa menghapus riwayat pasien. | Sukses |
+| 1 | Primary Key | Input pasien baru dengan No_RM yang sama (RM001). | Error: Duplicate Entry (Ditolak). | Sukses |
+| 2 | FK Cascade | Hapus data di tabel kunjungan (K20260602). | Data detail_resep & detail_diagnosa otomatis terhapus. | Sukses |
+| 3 | Nullability | Input diagnosa baru tanpa mengisi Nama_Diagnosa. | Error: Column cannot be null (Ditolak). | Sukses |
+| 4 | Set Null | Hapus data dokter master (DR001). | Kolom Kode_Dokter di tabel kunjungan otomatis jadi NULL. | Sukses |
