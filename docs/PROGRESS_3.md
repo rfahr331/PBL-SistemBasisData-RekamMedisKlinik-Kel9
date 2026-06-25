@@ -4,6 +4,7 @@
 *Studi Kasus:* Sistem Rekam Medis Klinik  
 *Kelompok:* 9  
 
+---
 ## 1. STRUKTUR SCRIPT SQL DDL DAN CONSTRAINT
 Implementasi basis data dilakukan pada MySQL (XAMPP/MariaDB) menggunakan engine InnoDB untuk memastikan penegakan aturan integritas referensial (Foreign Key Constraints). Berkas basis data utama disimpan dengan nama rekam_medis_klinik.sql.
 
@@ -38,6 +39,8 @@ ALTER TABLE `detail_resep`
 ALTER TABLE `kunjungan`
   ADD CONSTRAINT `kunjungan_ibfk_1` FOREIGN KEY (`No_RM`) REFERENCES `pasien` (`No_RM`) ON DELETE CASCADE,
   ADD CONSTRAINT `kunjungan_ibfk_2` FOREIGN KEY (`Kode_Dokter`) REFERENCES `dokter` (`Kode_Dokter`)
+
+  ---
   
 2. DATA UJI (DUMPING DATA)
 Basis data telah diisi dengan data sampel riasi operasional klinik per tanggal 25 Juni 2026 untuk keperluan verifikasi query:
@@ -46,6 +49,8 @@ Basis data telah diisi dengan data sampel riasi operasional klinik per tanggal 2
 - Tenaga Medis: 4 Dokter terdaftar dengan spesialisasi Umum dan Penyakit Dalam.
 - Master Penyakit: 4 Kode diagnosa representatif (Febris, Gastritis, Diare Akut, ISPA).
 - Master Obat: 4 Jenis item farmasi lengkap dengan harga satuan per item.
+
+---
 
 **3. IMPLEMENTASI 10 QUERY SQL EKSEKUSI**
 Berikut adalah 10 rancangan query fungsional untuk kebutuhan analisis data operasional dan manajerial klinik:
@@ -129,6 +134,8 @@ Skrining klinis mendeteksi pasien suspect infeksi akut/hipertermia.
 SELECT No_Kunjungan, No_RM, Keluhan, Suhu 
 FROM kunjungan 
 WHERE Suhu > 37.50;
+
+---
 
  **4. SKENARIO PENGUJIAN SISTEM (TESTING MATRIX)**
 
