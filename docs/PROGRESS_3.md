@@ -5,29 +5,31 @@
 *Kelompok:* 9  
 
 ---
+# PROGRES 3: IMPLEMENTASI DAN PENGUJIAN BASIS DATA
+
+**Mata Kuliah:** Sistem Basis Data  
+**Studi Kasus:** Sistem Rekam Medis Klinik  
+**Kelompok:** 9  
+
+---
+
 ## 1. STRUKTUR SCRIPT SQL DDL DAN CONSTRAINT
-Implementasi basis data dilakukan pada MySQL (XAMPP/MariaDB) menggunakan engine InnoDB untuk memastikan penegakan aturan integritas referensial (Foreign Key Constraints). Berkas basis data utama disimpan dengan nama rekam_medis_klinik.sql.
+Implementasi basis data dilakukan pada MySQL (XAMPP/MariaDB) menggunakan engine `InnoDB` untuk memastikan penegakan aturan integritas referensial (*Foreign Key Constraints*). Berkas basis data utama disimpan dengan nama `rekam_medis_klinik.sql`.
 
-1.1 Tabel Master (Dimensi)
-pasien: Menyimpan data rekam medis pasien dengan Primary Key No_RM.
+### 1.1 Tabel Master (Dimensi)
+* **`pasien`**: Menyimpan data rekam medis pasien dengan *Primary Key* `No_RM`.
+* **`dokter`**: Menyimpan identitas dokter pelaksana dengan *Primary Key* `Kode_Dokter`.
+* **`diagnosa`**: Tabel master klasifikasi penyakit dengan *Primary Key* `Kode_Diagnosa`.
+* **`obat`**: Menyimpan persediaan farmasi klinik dengan *Primary Key* `Kode_Obat`.
 
-dokter: Menyimpan identitas dokter pelaksana dengan Primary Key Kode_Dokter.
+### 1.2 Tabel Transaksi & Perantara
+* **`kunjungan`**: Header transaksi pelayanan pasien yang menghubungkan entitas `pasien` dan `dokter`.
+* **`detail_diagnosa`**: Entitas asosiatif penanganan relasi *Many-to-Many* antara `kunjungan` dan `diagnosa`.
+* **`detail_resep`**: Entitas asosiatif penanganan resep obat pasien per kunjungan (*Many-to-Many* antara `kunjungan` dan `obat`).
 
-diagnosa: Tabel master klasifikasi penyakit dengan Primary Key Kode_Diagnosa.
-
-obat: Menyimpan persediaan farmasi klinik dengan Primary Key Kode_Obat.
-
-1.2 Tabel Transaksi & Perantara
-kunjungan: Header transaksi pelayanan pasien yang menghubungkan entitas pasien dan dokter.
-
-detail_diagnosa: Entitas asosiatif penanganan relasi Many-to-Many antara kunjungan dan diagnosa.
-
-detail_resep: Entitas asosiatif penanganan resep obat pasien per kunjungan (Many-to-Many antara kunjungan dan obat).
-
-1.3 Penegakan Aturan Constraint
+### 1.3 Penegakan Aturan Constraint
 Aturan integritas data dikonfigurasi secara ketat pada skema relasi sebagai berikut:
-
-SQL
+```sql
 ALTER TABLE `detail_diagnosa`
   ADD CONSTRAINT `detail_diagnosa_ibfk_1` FOREIGN KEY (`No_Kunjungan`) REFERENCES `kunjungan` (`No_Kunjungan`) ON DELETE CASCADE,
   ADD CONSTRAINT `detail_diagnosa_ibfk_2` FOREIGN KEY (`Kode_Diagnosa`) REFERENCES `diagnosa` (`Kode_Diagnosa`) ON DELETE CASCADE;
@@ -38,8 +40,7 @@ ALTER TABLE `detail_resep`
 
 ALTER TABLE `kunjungan`
   ADD CONSTRAINT `kunjungan_ibfk_1` FOREIGN KEY (`No_RM`) REFERENCES `pasien` (`No_RM`) ON DELETE CASCADE,
-  ADD CONSTRAINT `kunjungan_ibfk_2` FOREIGN KEY (`Kode_Dokter`) REFERENCES `dokter` (`Kode_Dokter`)
-
+  ADD CONSTRAINT `kunjungan_ibfk_2` FOREIGN KEY (`Kode_Dokter`) REFERENCES `dokter` (`Kode_Dokter`) ON DELETE SET NULL;
   ---
   
 2. DATA UJI (DUMPING DATA)
