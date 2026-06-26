@@ -48,6 +48,26 @@ Basis data telah diisi dengan data sampel riasi operasional klinik per tanggal 2
 ---
 
 **3. IMPLEMENTASI 10 QUERY SQL EKSEKUSI**
+3.1 IMPLEMENTASI TRIGGER OTOMATIS (MANAJEMEN STOK)
+Untuk mengoptimalkan fungsionalitas sistem secara *real-time*, ditambahkan mekanisme **Trigger** otomatis pada tabel `detail_resep` untuk mengatur mutasi otomatis stok persediaan obat.
+
+#### Trigger 1: Otomatis Mengurangi Stok Obat (AFTER INSERT)
+> *Mendeteksi setiap resep obat baru yang diinput oleh dokter/apoteker, lalu otomatis mengurangi kuantitas stok pada tabel `obat`.*
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER tgr_kurang_stok_obat
+AFTER INSERT ON detail_resep
+FOR EACH ROW
+BEGIN
+    UPDATE obat 
+    SET Stok = Stok - NEW.Jumlah
+    WHERE Kode_Obat = NEW.Kode_Obat;
+END$$
+
+DELIMITER ;
+```
 Berikut adalah 10 rancangan query fungsional untuk kebutuhan analisis data operasional dan manajerial klinik:
 ```sql
 Q1: Menampilkan Riwayat Medis Pasien Beserta Dokter yang Menangani
@@ -129,14 +149,27 @@ Skrining klinis mendeteksi pasien suspect infeksi akut/hipertermia.
 SELECT No_Kunjungan, No_RM, Keluhan, Suhu 
 FROM kunjungan 
 WHERE Suhu > 37.50;
+
+DELIMITER $$
+
+CREATE TRIGGER tgr_kembalikan_stok_obat
+AFTER DELETE ON detail_resep
+FOR EACH ROW
+BEGIN
+    UPDATE obat 
+    SET Stok = Stok + OLD.Jumlah
+    WHERE Kode_Obat = OLD.Kode_Obat;
+END$$
+
+DELIMITER ;
 ```
 ---
 
-## 4. SKENARIO PENGUJIAN SISTEM (TESTING MATRIX)
-
-| No | Komponen Uji | Tindakan / Input Simulasi | Reaksi Sistem Ekspektasi | Status |
+No | Komponen Uji | Tindakan / Input Simulasi | Reaksi Sistem Ekspektasi | Status |
 | :---: | :--- | :--- | :--- | :---: |
-| 1 | Primary Key | Input pasien baru dengan No_RM yang sama (RM001). | Error: Duplicate Entry (Ditolak). | Sukses |
-| 2 | FK Cascade | Hapus data di tabel kunjungan (K20260602). | Data detail_resep & detail_diagnosa otomatis terhapus. | Sukses |
-| 3 | Nullability | Input diagnosa baru tanpa mengisi Nama_Diagnosa. | Error: Column cannot be null (Ditolak). | Sukses |
+| 1 | Primary Key | Input pasien baru dengan No_RM yang sama (RM001). | Error: Duplicate Entry (Ditolak oleh sistem). | Sukses |
+| 2 | FK Cascade | Hapus data utama di tabel kunjungan (K20260602). | Data detail_resep & detail_diagnosa otomatis terhapus. | Sukses |
+| 3 | Nullability | Input diagnosa baru tanpa mengisi Nama_Diagnosa. | Error: Column cannot be null (Ditolak sistem). | Sukses |
 | 4 | Set Null | Hapus data dokter master (DR001). | Kolom Kode_Dokter di tabel kunjungan otomatis jadi NULL. | Sukses |
+| 5 | Trigger Insert | Input resep baru di detail_resep dengan jumlah 5. | Kolom Stok pada tabel obat otomatis berkurang 5. | Sukses |
+| 6 | Trigger Delete | Hapus baris resep yang ada di tabel detail_resep. | Kolom Stok pada tabel obat otomatis bertambah kembali. | Sukses |
