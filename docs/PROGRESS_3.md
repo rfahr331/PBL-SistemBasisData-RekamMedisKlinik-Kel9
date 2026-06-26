@@ -68,88 +68,8 @@ END$$
 
 DELIMITER ;
 ```
-Berikut adalah 10 rancangan query fungsional untuk kebutuhan analisis data operasional dan manajerial klinik:
+#### Trigger 2: Otomatis Mengembalikan Stok Obat (AFTER DELETE)
 ```sql
-Q1: Menampilkan Riwayat Medis Pasien Beserta Dokter yang Menangani
-Menampilkan riwayat kunjungan pasien lengkap dengan nama dokter dan keluhannya.
-
-SELECT k.No_Kunjungan, p.Nama_Pasien, k.Tgl_Kunjungan, k.Keluhan, d.Nama_Dokter 
-FROM kunjungan k
-JOIN pasien p ON k.No_RM = p.No_RM
-JOIN dokter d ON k.Kode_Dokter = d.Kode_Dokter;
-
-Q2: Statistik Jenis Penyakit Terbanyak (Kebutuhan Fungsional 10)
-Menghitung frekuensi kemunculan diagnosa penyakit untuk mendeteksi tren wabah.
-
-SELECT dg.Kode_Diagnosa, dg.Nama_Diagnosa, COUNT(dd.No_Kunjungan) AS Jumlah_Kasus
-FROM diagnosa dg
-LEFT JOIN detail_diagnosa dd ON dg.Kode_Diagnosa = dd.Kode_Diagnosa
-GROUP BY dg.Kode_Diagnosa, dg.Nama_Diagnosa
-ORDER BY Jumlah_Kasus DESC;
-
-Q3: Laporan Obat Paling Sering Diresepkan (Kebutuhan Fungsional 11)
-Mengetahui volume pemakaian obat untuk efisiensi manajemen stok gudang farmasi.
-
-SELECT o.Kode_Obat, o.Nama_Obat, SUM(dr.Jumlah) AS Total_Keluaran, o.Satuan
-FROM obat o
-JOIN detail_resep dr ON o.Kode_Obat = dr.Kode_Obat
-GROUP BY o.Kode_Obat, o.Nama_Obat, o.Satuan
-ORDER BY Total_Keluaran DESC;
-
-Q4: Rincian Tagihan Obat per Kunjungan Pasien
-Menampilkan biaya yang harus dibayar pasien di kasir/apotek untuk penebusan obat.
-
-SELECT dr.No_Kunjungan, p.Nama_Pasien, o.Nama_Obat, dr.Jumlah, (o.Harga * dr.Jumlah) AS Subtotal_Harga
-FROM detail_resep dr
-JOIN kunjungan k ON dr.No_Kunjungan = k.No_Kunjungan
-JOIN pasien p ON k.No_RM = p.No_RM
-JOIN obat o ON dr.Kode_Obat = o.Kode_Obat;
-
-Q5: Rekap Pendapatan Klinik Berdasarkan Transaksi Resep Obat
-Menghitung akumulasi nominal perolehan kas klinik dari sektor farmasi.
-
-SELECT dr.No_Kunjungan, SUM(o.Harga * dr.Jumlah) AS Total_Pendapatan_Resep
-FROM detail_resep dr
-JOIN obat o ON dr.Kode_Obat = o.Kode_Obat
-GROUP BY dr.No_Kunjungan;
-
-Q6: Menampilkan Pasien yang Berumur di Atas 20 Tahun
-Menganalisis segmentasi usia pasien dewasa menggunakan fungsi penanggalan.
-
-SELECT No_RM, Nama_Pasien, Tgl_Lahir, (YEAR(CURDATE()) - YEAR(Tgl_Lahir)) AS Usia
-FROM pasien
-WHERE (YEAR(CURDATE()) - YEAR(Tgl_Lahir)) > 20;
-
-Q7: Menampilkan Jumlah Kunjungan Pasien per Dokter
-Mengukur beban kerja atau tingkat produktivitas pemeriksaan masing-masing dokter.
-
-SELECT d.Kode_Dokter, d.Nama_Dokter, COUNT(k.No_Kunjungan) AS Total_Pasien_Ditangani
-FROM dokter d
-LEFT JOIN kunjungan k ON d.Kode_Dokter = k.Kode_Dokter
-GROUP BY d.Kode_Dokter, d.Nama_Dokter;
-
-Q8: Menampilkan Daftar Pasien yang Mengalami Gejala Demam (Febris)
-Mencari data pasien secara spesifik berdasarkan parameter kata kunci keluhan.
-
-SELECT k.No_Kunjungan, p.Nama_Pasien, k.Keluhan, k.Suhu
-FROM kunjungan k
-JOIN pasien p ON k.No_RM = p.No_RM
-WHERE k.Keluhan LIKE '%Demam%';
-
-Q9: Analisis Karakteristik Pasien Berdasarkan Jenis Kelamin
-Melihat persebaran demografi gender pasien yang berkunjung ke klinik.
-
-SELECT JK AS Jenis_Kelamin, COUNT(*) AS Total_Pasien
-FROM pasien
-GROUP BY JK;
-
-Q10: Menampilkan Data Kunjungan yang Memiliki Nilai Suhu Di Atas Normal (>37.5°C)
-Skrining klinis mendeteksi pasien suspect infeksi akut/hipertermia.
-
-SELECT No_Kunjungan, No_RM, Keluhan, Suhu 
-FROM kunjungan 
-WHERE Suhu > 37.50;
-
 DELIMITER $$
 
 CREATE TRIGGER tgr_kembalikan_stok_obat
@@ -163,7 +83,90 @@ END$$
 
 DELIMITER ;
 ```
+Berikut adalah 10 rancangan query fungsional untuk kebutuhan analisis data operasional dan manajerial klinik:
+
+Q1: Menampilkan Riwayat Medis Pasien Beserta Dokter yang Menangani
+Menampilkan riwayat kunjungan pasien lengkap dengan nama dokter dan keluhannya.
+```sql
+SELECT k.No_Kunjungan, p.Nama_Pasien, k.Tgl_Kunjungan, k.Keluhan, d.Nama_Dokter 
+FROM kunjungan k
+JOIN pasien p ON k.No_RM = p.No_RM
+JOIN dokter d ON k.Kode_Dokter = d.Kode_Dokter;
+```
+Q2: Statistik Jenis Penyakit Terbanyak (Kebutuhan Fungsional 10)
+Menghitung frekuensi kemunculan diagnosa penyakit untuk mendeteksi tren wabah.
+```sql
+SELECT dg.Kode_Diagnosa, dg.Nama_Diagnosa, COUNT(dd.No_Kunjungan) AS Jumlah_Kasus
+FROM diagnosa dg
+LEFT JOIN detail_diagnosa dd ON dg.Kode_Diagnosa = dd.Kode_Diagnosa
+GROUP BY dg.Kode_Diagnosa, dg.Nama_Diagnosa
+ORDER BY Jumlah_Kasus DESC;
+```
+Q3: Laporan Obat Paling Sering Diresepkan (Kebutuhan Fungsional 11)
+Mengetahui volume pemakaian obat untuk efisiensi manajemen stok gudang farmasi.
+```sql
+SELECT o.Kode_Obat, o.Nama_Obat, SUM(dr.Jumlah) AS Total_Keluaran, o.Satuan
+FROM obat o
+JOIN detail_resep dr ON o.Kode_Obat = dr.Kode_Obat
+GROUP BY o.Kode_Obat, o.Nama_Obat, o.Satuan
+ORDER BY Total_Keluaran DESC;
+```
+Q4: Rincian Tagihan Obat per Kunjungan Pasien
+Menampilkan biaya yang harus dibayar pasien di kasir/apotek untuk penebusan obat.
+```sql
+SELECT dr.No_Kunjungan, p.Nama_Pasien, o.Nama_Obat, dr.Jumlah, (o.Harga * dr.Jumlah) AS Subtotal_Harga
+FROM detail_resep dr
+JOIN kunjungan k ON dr.No_Kunjungan = k.No_Kunjungan
+JOIN pasien p ON k.No_RM = p.No_RM
+JOIN obat o ON dr.Kode_Obat = o.Kode_Obat;
+```
+Q5: Rekap Pendapatan Klinik Berdasarkan Transaksi Resep Obat
+Menghitung akumulasi nominal perolehan kas klinik dari sektor farmasi.
+```sql
+SELECT dr.No_Kunjungan, SUM(o.Harga * dr.Jumlah) AS Total_Pendapatan_Resep
+FROM detail_resep dr
+JOIN obat o ON dr.Kode_Obat = o.Kode_Obat
+GROUP BY dr.No_Kunjungan;
+```
+Q6: Menampilkan Pasien yang Berumur di Atas 20 Tahun
+Menganalisis segmentasi usia pasien dewasa menggunakan fungsi penanggalan.
+```sql
+SELECT No_RM, Nama_Pasien, Tgl_Lahir, (YEAR(CURDATE()) - YEAR(Tgl_Lahir)) AS Usia
+FROM pasien
+WHERE (YEAR(CURDATE()) - YEAR(Tgl_Lahir)) > 20;
+```
+Q7: Menampilkan Jumlah Kunjungan Pasien per Dokter
+Mengukur beban kerja atau tingkat produktivitas pemeriksaan masing-masing dokter.
+```sql
+SELECT d.Kode_Dokter, d.Nama_Dokter, COUNT(k.No_Kunjungan) AS Total_Pasien_Ditangani
+FROM dokter d
+LEFT JOIN kunjungan k ON d.Kode_Dokter = k.Kode_Dokter
+GROUP BY d.Kode_Dokter, d.Nama_Dokter;
+```
+Q8: Menampilkan Daftar Pasien yang Mengalami Gejala Demam (Febris)
+Mencari data pasien secara spesifik berdasarkan parameter kata kunci keluhan.
+```sql
+SELECT k.No_Kunjungan, p.Nama_Pasien, k.Keluhan, k.Suhu
+FROM kunjungan k
+JOIN pasien p ON k.No_RM = p.No_RM
+WHERE k.Keluhan LIKE '%Demam%';
+```
+Q9: Analisis Karakteristik Pasien Berdasarkan Jenis Kelamin
+Melihat persebaran demografi gender pasien yang berkunjung ke klinik.
+```sql
+SELECT JK AS Jenis_Kelamin, COUNT(*) AS Total_Pasien
+FROM pasien
+GROUP BY JK;
+```
+Q10: Menampilkan Data Kunjungan yang Memiliki Nilai Suhu Di Atas Normal (>37.5°C)
+Skrining klinis mendeteksi pasien suspect infeksi akut/hipertermia.
+```sql
+SELECT No_Kunjungan, No_RM, Keluhan, Suhu 
+FROM kunjungan 
+WHERE Suhu > 37.50;
+```
 ---
+## 4. SKENARIO PENGUJIAN SISTEM (TESTING MATRIX)
 
 No | Komponen Uji | Tindakan / Input Simulasi | Reaksi Sistem Ekspektasi | Status |
 | :---: | :--- | :--- | :--- | :---: |
@@ -173,3 +176,23 @@ No | Komponen Uji | Tindakan / Input Simulasi | Reaksi Sistem Ekspektasi | Statu
 | 4 | Set Null | Hapus data dokter master (DR001). | Kolom Kode_Dokter di tabel kunjungan otomatis jadi NULL. | Sukses |
 | 5 | Trigger Insert | Input resep baru di detail_resep dengan jumlah 5. | Kolom Stok pada tabel obat otomatis berkurang 5. | Sukses |
 | 6 | Trigger Delete | Hapus baris resep yang ada di tabel detail_resep. | Kolom Stok pada tabel obat otomatis bertambah kembali. | Sukses |
+
+---
+## 5. DOKUMENTASI SCREENSHOT IMPLEMENTASI
+Berikut adalah bukti visual hasil implementasi skema relasi basis data serta eksekusi query fungsional pada aplikasi phpMyAdmin (XAMPP) Kelompok 9:
+
+### 5.1 Relasi Antar Tabel (Designer View phpMyAdmin)
+> *Menampilkan struktur fisik 7 tabel yang saling terhubung melalui relasi Foreign Key (Integritas Referensial).*
+
+<img width="760" height="266" alt="Cuplikan layar 2026-06-26 162113" src="https://github.com/user-attachments/assets/7591df87-2e88-4719-b7e0-cad376c2a0b5" />
+
+
+### 5.2 Bukti Eksekusi Query Laporan Statistik Penyakit (Q2)
+> *Menampilkan bukti keberhasilan eksekusi query analisis tren penyakit terbanyak berdasarkan jumlah kunjungan pasien.*
+
+<img width="698" height="167" alt="Cuplikan layar 2026-06-26 164120" src="https://github.com/user-attachments/assets/df0ec234-7683-4242-baff-b045bbe0476f" />
+
+### 5.3 Bukti Eksekusi Trigger Otomatis Manajemen Stok Obat
+> *Menampilkan status berhasil setelah trigger `tgr_kurang_stok_obat` aktif bekerja di latar belakang basis data saat penambahan data resep.*
+
+<img width="442" height="305" alt="Cuplikan layar 2026-06-26 164443" src="https://github.com/user-attachments/assets/32d23330-bc3c-478e-93d5-519f65d1ee3b" />
