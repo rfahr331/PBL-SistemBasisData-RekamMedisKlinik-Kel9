@@ -1,0 +1,6 @@
+{
+  "name": "Klinik Anaverse",
+  "description": "Sistem Rekam Medis Digital Klinik & Rumah Sakit Anaverse lengkap dengan rekam medis pasien, riwayat kunjungan, diagnosa, dan resep obat berdasarkan ERD.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
